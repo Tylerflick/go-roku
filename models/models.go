@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 )
 
+// Apps represents the return from request
 type Apps struct {
 	XMLName xml.Name `xml:"apps"`
 	Text    string   `xml:",chardata"`
@@ -14,13 +15,13 @@ type Apps struct {
 		Version string `xml:"version,attr"`
 		Subtype string `xml:"subtype,attr"`
 	} `xml:"app"`
-} 
+}
 
 type ActiveApp struct {
 	XMLName xml.Name `xml:"active-app"`
 	Text    string   `xml:",chardata"`
 	App     string   `xml:"app"`
-} 
+}
 
 type DeviceInfo struct {
 	XMLName                     xml.Name `xml:"device-info"`
@@ -88,7 +89,7 @@ type DeviceInfo struct {
 	SupportURL                  string   `xml:"support-url"`
 	GrandcentralVersion         string   `xml:"grandcentral-version"`
 	DavinciVersion              string   `xml:"davinci-version"`
-} 
+}
 
 type TvChannels struct {
 	XMLName xml.Name `xml:"tv-channels"`
@@ -103,7 +104,7 @@ type TvChannels struct {
 		PhysicalChannel   string `xml:"physical-channel"`
 		PhysicalFrequency string `xml:"physical-frequency"`
 	} `xml:"channel"`
-} 
+}
 
 type TvChannel struct {
 	XMLName xml.Name `xml:"tv-channel"`
@@ -135,4 +136,4 @@ type TvChannel struct {
 		ProgramAudioFormat    string `xml:"program-audio-format"`
 		ProgramHasCc          string `xml:"program-has-cc"`
 	} `xml:"channel"`
-} 
+}
