@@ -91,6 +91,10 @@ func (c *Client) VolumeUp() (int, error) {
 	return c.KeyPress(&Key{Name: "VolumeUp"})
 }
 
+func (c *Client) PowerOn() (int, error) {
+	return c.KeyPress(&Key{Name: "PowerOff"})
+}
+
 func (c *Client) PowerOff() (int, error) {
 	return c.KeyPress(&Key{Name: "PowerOff"})
 }
