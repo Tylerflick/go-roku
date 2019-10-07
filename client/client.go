@@ -79,6 +79,26 @@ func (c *Client) GetInputs() []string {
 	}
 }
 
+func (c *Client) GetDeviceInfo() (*models.DeviceInfo, error) {
+	// query/device-info
+	client := &http.Client{}
+	resp, err := client.Get(fmt.Sprintf("http://%s:8060/query/device-info", c.address))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var info models.DeviceInfo
+	err = xml.Unmarshal(data, &info)
+	if err != nil {
+		return nil, err
+	}
+	return &info, nil
+}
+
 func (c *Client) VolumeDown() (int, error) {
 	return c.KeyPress(&Key{Name: "VolumeDown"})
 }
@@ -119,19 +139,19 @@ func (c *Client) ChangeInput(source string) (int, error) {
 // KeyDown ...
 func (c *Client) KeyDown(key *Key) (int, error) {
 	// keydown/key
-	return c.post(fmt.Sprintf("http://%s:8060/keydown/key", c.address), "", nil)
+	return c.postNoResponse(fmt.Sprintf("http://%s:8060/keydown/key", c.address), "", nil)
 }
 
 // KeyUp ...
 func (c *Client) KeyUp(key *Key) (int, error) {
 	// keyup/key
-	return c.post(fmt.Sprintf("http://%s:8060/keyup/%s", c.address, key.Name), "", nil)
+	return c.postNoResponse(fmt.Sprintf("http://%s:8060/keyup/%s", c.address, key.Name), "", nil)
 }
 
 // KeyPress ...
 func (c *Client) KeyPress(key *Key) (int, error) {
 	// keypress/key
-	return c.post(fmt.Sprintf("http://%s:8060/keypress/%s", c.address, key.Name), "", nil)
+	return c.postNoResponse(fmt.Sprintf("http://%s:8060/keypress/%s", c.address, key.Name), "", nil)
 }
 
 // LaunchApp ...
@@ -139,24 +159,20 @@ func (c *Client) LaunchApp(id *string) {
 	// TODO: Implement
 }
 
-func (c *Client) InstallApp(id *string) {
-	// TODO: Implement
-}
-
-func (c *Client) GetDeviceInfo() {
-	// query/device-info
-	// TODO: Implement
-}
-
-func (c *Client) GetAppIcon() {
-	// query/icon/appID
-	// TODO: Implement
-}
-
-func (c *Client) post(url, form string, body io.Reader) (int, error) {
+func (c *Client) postNoResponse(url, form string, body io.Reader) (int, error) {
 	resp, err := c.http.Post(url, form, body)
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 	return resp.StatusCode, err
+}
+
+func (c *Client) post(url, form string, body io.Reader) (int, string, error) {
+	resp, err := c.http.Post(url, form, body)
+	if err != nil {
+		return 0, "", err
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	return resp.StatusCode, string(data), err
 }
